@@ -1,0 +1,42 @@
+h1. About
+
+The contributors gem is useful for getting informations about project contributors. It assumes that Git is used. In particular it can be used for generating CONTRIBUTORS file.
+
+h1. Usage
+
+Just install it through RubyGems:
+
+<pre>
+gem install contributors
+</pre>
+
+Use the API:
+
+<pre>
+require "contributors"
+</pre>
+
+Use the "Nake":https://github.com/botanicus/nake tasks:
+
+<pre>
+load "contributors.nake"
+
+# OPTIONAL: Where the project is located. Defaults to Dir.pwd.
+Task[:contributors].config[:path] = Dir.pwd
+
+# OPTIONAL: Where the CONTRIBUTORS file is located.
+# It can be either a string or a callable object. Defaults to:
+# Proc.new { File.join(task.config[:path], "CONTRIBUTORS") }
+Task[:contributors].config[:output_path] = Proc.new { File.join(task.config[:path], "CONTRIBUTORS") }
+
+# OPTIONAL: How to sort results, options are :commits or :LOC, :LOC is default.
+Task[:contributors].config[:sort_by] = :LOC
+
+# OPTIONAL: An array of regular expressions which should be ignored.
+# Defaults to Contributors::IGNORED_PATTERNS, which is [/^vendor\//, /^gems\//, /.+\.gem$/].
+Task[:contributors].config[:ignore] = Contributors::IGNORED_PATTERNS
+
+# OPTIONAL: How to format each line. E-mail is author's e-mail and in data
+there are keys :name, :commits and :LOC. Commits and LOC are both integers.
+Task[:contributors].config[:format] = -> { |email, data| "#{email}: #{data[:LOC]}" }
+</pre>

@@ -1,0 +1,41 @@
+# encoding: utf-8
+
+Task.new(:contributors) do |task|
+  task.description = "Regenerate contributors file."
+
+  # Settings.
+  task.config[:path]        = Dir.pwd
+  task.config[:output_path] = Proc.new { File.join(task.config[:path], "CONTRIBUTORS") }
+  task.config[:ignore]      = nil
+  task.config[:sort_by]     = :LOC
+  task.config[:format]      = Proc.new { |email, data| "#{data[:name]}: #{data[:commits]} (#{data[:LOC]} LOC)" }
+
+  # Helpers.
+  def task.output_path
+    if self.config[:output_path].respond_to?(:call)
+      self.config[:output_path].call
+    else
+      self.config[:output_path]
+    end
+  end
+
+  def task.ignored_patterns
+    self.config[:ignore] || Contributors::IGNORED_PATTERNS
+  end
+
+  # Define the actual task.
+  task.define do
+    require "contributors"
+
+    Dir.chdir(task.config[:path]) do
+      contributors = Contributors.new(task.config[:path], task.ignored_patterns)
+
+      # Write the actual CONTRIBUTORS file.
+      File.open(task.output_path, "w") do |file|
+        contributors.results.each do |email, data|
+          file.puts(task.config[:format].call(email, data))
+        end
+      end
+    end
+  end
+end
