@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+# TODO: Use Grit or something rather than this black magic.
 class Contributors
   IGNORED_PATTERNS = [/^vendor\//, /^gems\//, /.+\.gem$/]
 
@@ -12,13 +13,14 @@ class Contributors
     repo do
       authors = %x{git log | grep ^Author:}.split("\n")
       results = authors.reduce(Hash.new) do |results, line|
-        line.match(/^Author: (.+) <.+>$/, '\1')
+        line.match(/^Author: (.+) <(.+)>$/)
         name, email = $1, $2
         results[email] ||= Hash.new
         results[email][:name] = name
         results[email][:commits] ||= 0
         results[email][:commits] += 1
-        results[email][:LOC] = LOC[email]
+        results[email][:LOC] = loc[email]
+        p loc
         results
       end
     end
@@ -41,18 +43,22 @@ class Contributors
     files = %x{git ls-files}.split("\n")
     files.select do |path|
       self.ignored_patterns.any? do |pattern|
-        path.match(pattern)
+        not path.match(pattern)
       end
     end
   end
 
   # TODO: At the moment this are any lines, not lines of code.
   # {email_1 => LOC for email_1, email_2 => LOC for email_2}
-  def LOC
-    @LOC ||= begin
+  def loc
+    @loc ||= begin
       files.reduce(Hash.new) do |buffer, path|
-        emails = %x{git blame '#{path}' --show-email | awk '{ print $2 }' | sed -E 's/^\(//'}
-        emails.each { |email| (buffer[email] ||= 0) += 1 }
+        emails = %x{git blame '#{path}' --show-email | awk '{ print $2 }' | ruby -pe '$_.sub!(/^.*<(.+)>.*$/, "\\\\1")'}
+        emails.split("\n").each do |email|
+          buffer[email] ||= 0
+          buffer[email] += 1
+        end
+
         buffer
       end
     end

@@ -1,6 +1,8 @@
 #!/usr/bin/env nake
 # encoding: utf-8
 
-load File.expand_path("../lib/contributors.nake", __FILE__)
+$LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 
-Task[:contributors].config[:format] = Proc.new { |email, data| "#{data[:name]}: #{data[:LOC]}" }
+load "contributors.nake"
+
+Task[:contributors].config[:format] = Proc.new { |email, data| "#{email}: #{data.inspect}" }
