@@ -14,6 +14,16 @@ Use the API:
 
 <pre>
 require "contributors"
+
+contributors = Contributors.new
+contributors.results
+# => {"stastny@101ideas.cz" => {:name => "Jakub Stastny aka botanicus", :commits = >3, :LOC = >219}}
+
+# You can optionally specify project path and list of ignored patterns thusly:
+contributors = Contributors.new(Dir.pwd, [/^(vendor|gems)\//, /.+\.gem$/])
+
+# The Contributors#result method takes an optional argument determining by which field you want to sort the results:
+contributors.resuls(:LOC) # or :commits
 </pre>
 
 Use the "Nake":https://github.com/botanicus/nake tasks:
