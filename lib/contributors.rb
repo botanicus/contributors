@@ -20,7 +20,6 @@ class Contributors
         results[email][:commits] ||= 0
         results[email][:commits] += 1
         results[email][:LOC] = loc[email]
-        p loc
         results
       end
     end
