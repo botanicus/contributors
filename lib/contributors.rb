@@ -19,7 +19,7 @@ class Contributors
         results[email][:name] = name
         results[email][:commits] ||= 0
         results[email][:commits] += 1
-        results[email][:LOC] = loc[email]
+        results[email][:LOC] = loc[email] || 0
         results
       end
     end
