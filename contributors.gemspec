@@ -5,9 +5,9 @@ require "base64"
 
 Gem::Specification.new do |s|
   s.name = "contributors"
-  s.version = "0.1.2"
+  s.version = "0.2"
   s.authors = ["Jakub Stastny aka botanicus"]
-  s.homepage = "http://github.com/botanicus/contributors"
+  s.homepage = "https://github.com/botanicus/contributors"
   s.summary = "API for getting info about contributors of a project which is in Git."
   s.description = "The contributors gem is useful for getting informations about project contributors. It assumes that Git is used. In particular it can be used for generating CONTRIBUTORS file."
   s.cert_chain = nil
@@ -32,6 +32,9 @@ Gem::Specification.new do |s|
   else
     s.post_install_message = CHANGELOG.new.version_changes
   end
+
+  # Dependencies
+  s.add_dependency "grit"
 
   # RubyForge
   s.rubyforge_project = "contributors"

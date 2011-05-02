@@ -1,3 +1,10 @@
+= Version 0.2
+  * Rewritten using Grit.
+  * Ignored patterns don't work anymore.
+  * Contributors#results takes the criterium for counting
+    lines of code as the second argument. It can be either
+    :additions, :deletions or :total, which is the default value.
+
 = Version 0.1
   * The actual library.
   * Nake tasks for generating CONTRIBUTORS.

@@ -6,9 +6,9 @@ Task.new(:contributors) do |task|
   # Settings.
   task.config[:path]        = Dir.pwd
   task.config[:output_path] = Proc.new { File.join(task.config[:path], "CONTRIBUTORS") }
-  task.config[:ignore]      = nil
   task.config[:sort_by]     = :LOC
-  task.config[:format]      = Proc.new { |email, data| "#{data[:name]}: #{data[:commits]} (#{data[:LOC]} LOC)" }
+  task.config[:criterium]   = :total
+  task.config[:format]      = Proc.new { |author, data| "#{author.name}: #{data[:commits]} commits, #{data[:LOC]} LOC" }
 
   # Helpers.
   def task.output_path
@@ -19,21 +19,20 @@ Task.new(:contributors) do |task|
     end
   end
 
-  def task.ignored_patterns
-    self.config[:ignore] || Contributors::IGNORED_PATTERNS
-  end
-
   # Define the actual task.
   task.define do
     require "contributors"
 
     Dir.chdir(task.config[:path]) do
-      contributors = Contributors.new(task.config[:path], task.ignored_patterns)
+      contributors = Contributors.new(task.config[:path])
 
       # Write the actual CONTRIBUTORS file.
       File.open(task.output_path, "w") do |file|
-        contributors.results.each do |email, data|
-          file.puts(task.config[:format].call(email, data))
+        sort_by = self.config[:sort_by]
+        criterium = self.config[:criterium]
+
+        contributors.results(sort_by, criterium).each do |author, data|
+          file.puts(task.config[:format].call(author, data))
         end
       end
     end

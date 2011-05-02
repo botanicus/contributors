@@ -5,4 +5,4 @@ $LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 
 load "contributors.nake"
 
-Task[:contributors].config[:format] = Proc.new { |email, data| "#{email}: #{data.inspect}" }
+Task[:contributors].config[:format] = Proc.new { |author, data| "#{author.inspect}: #{data.inspect}" }

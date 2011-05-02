@@ -17,13 +17,19 @@ require "contributors"
 
 contributors = Contributors.new
 contributors.results
-# => {"stastny@101ideas.cz" => {:name => "Jakub Stastny aka botanicus", :commits = >3, :LOC = >219}}
+# => {#<Grit::Actor "Jakub Stastny aka botanicus <stastny@101ideas.cz>"> => {:commits => 9, :LOC => 255}}
 
-# You can optionally specify project path and list of ignored patterns thusly:
-contributors = Contributors.new(Dir.pwd, [/^(vendor|gems)\//, /.+\.gem$/])
+# You can optionally specify project path thusly:
+contributors = Contributors.new(Dir.pwd)
 
-# The Contributors#result method takes an optional argument determining by which field you want to sort the results:
-contributors.resuls(:LOC) # or :commits
+# The Contributors#result method takes an optional argument
+# determining by which field you want to sort the results:
+contributors.results(:LOC) # or :commits
+
+# By default it takes all the changes (as the second argument
+# defaults to :total), but if you want, you can limit changes
+# on :additions or :deletions only:
+contributors.results(:LOC, :additions)
 </pre>
 
 Use the "Nake":https://github.com/botanicus/nake tasks:
@@ -42,11 +48,11 @@ Task[:contributors].config[:output_path] = Proc.new { File.join(task.config[:pat
 # OPTIONAL: How to sort results, options are :commits or :LOC, :LOC is default.
 Task[:contributors].config[:sort_by] = :LOC
 
-# OPTIONAL: An array of regular expressions which should be ignored.
-# Defaults to Contributors::IGNORED_PATTERNS, which is [/^vendor\//, /^gems\//, /.+\.gem$/].
-Task[:contributors].config[:ignore] = Contributors::IGNORED_PATTERNS
+# OPTIONAL: Criterium for counting lines of code. Can be either
+# :additions, :deletions or :total (which is the default value).
+Task[:contributors].config[:criterium] = :total
 
 # OPTIONAL: How to format each line. E-mail is author's e-mail and in data
 there are keys :name, :commits and :LOC. Commits and LOC are both integers.
-Task[:contributors].config[:format] = -> { |email, data| "#{email}: #{data[:LOC]}" }
+Task[:contributors].config[:format] = -> { |author, data| "#{author.email}: #{data[:LOC]}" }
 </pre>
